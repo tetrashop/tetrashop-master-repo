@@ -1,0 +1,55 @@
+# پیکربندی Prometheus برای مانیتورینگ پیشرفته
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+rule_files:
+  - "alert_rules.yml"
+
+scrape_configs:
+  - job_name: 'tetrashop-platform'
+    static_configs:
+      - targets: ['localhost:3000']
+    metrics_path: '/metrics'
+    scrape_interval: 10s
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        regex: '(.*):.*'
+        replacement: '${1}'
+
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: ['localhost:9100']
+
+  - job_name: 'redis-exporter'
+    static_configs:
+      - targets: ['localhost:9121']
+
+# آلام‌های هوشمند
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: ['localhost:9093']
+
+alert_rules.yml:
+groups:
+  - name: tetrashop_alerts
+    rules:
+      - alert: HighResponseTime
+        expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) > 1
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "پاسخ‌دهی کند در پلتفرم تتراشاپ"
+          description: "زمان پاسخ‌دهی ۹۵ام صدک بیش از ۱ ثانیه است"
+
+      - alert: ServiceDown
+        expr: up{job="tetrashop-platform"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "سرویس تتراشاپ داون است"
+          description: "سرویس برای بیش از ۱ دقیقه در دسترس نیست"

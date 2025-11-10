@@ -1,0 +1,33 @@
+FROM node:18-alpine AS base
+
+# تنظیمات بهینه برای Alpine
+RUN apk add --no-cache \
+    python3 \
+    make \
+    g++ \
+    libc6-compat
+
+WORKDIR /app
+
+# نصب dependencies با کش بهینه
+COPY package*.json ./
+RUN npm ci --only=production && \
+    npm cache clean --force
+
+# کپی سورس کد
+COPY . .
+
+# کاربر غیر root برای امنیت
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S nextjs -u 1001
+
+USER nextjs
+
+# سلامت‌سنجی
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+    CMD node health-check.js
+
+EXPOSE 3000
+
+# اجرای بهینه
+CMD ["node", "--max-old-space-size=4096", "server.js"]
