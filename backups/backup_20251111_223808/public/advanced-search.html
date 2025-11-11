@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تتراشاپ - سیستم جستجوی پیشرفته</title>
+    <style>
+        :root {
+            --primary: #667eea;
+            --secondary: #764ba2;
+            --success: #48bb78;
+            --danger: #f56565;
+            --warning: #ed8936;
+            --info: #4299e1;
+            --dark: #2d3748;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            min-height: 100vh;
+            direction: rtl;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 25px;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+        
+        .search-interface {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 25px;
+            margin-bottom: 25px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .search-input, .combobox {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        .search-input:focus, .combobox:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+        
+        .combobox {
+            background: white;
+            cursor: pointer;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+            display: inline-block;
+            text-align: center;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            width: 100%;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .results-container {
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        
+        .result-item {
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            background: #f7fafc;
+            transition: all 0.3s;
+        }
+        
+        .result-item:hover {
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .result-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .result-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: var(--dark);
+        }
+        
+        .result-meta {
+            display: flex;
+            gap: 15px;
+            font-size: 0.9em;
+            color: #718096;
+            margin-bottom: 10px;
+        }
+        
+        .result-content {
+            color: #4a5568;
+            line-height: 1.6;
+        }
+        
+        .result-details {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 10px;
+            border-right: 4px solid var(--info);
+        }
+        
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .detail-item {
+            padding: 8px;
+            background: #f7fafc;
+            border-radius: 6px;
+            font-size: 0.9em;
+        }
+        
+        .preview-panel {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            max-width: 90%;
+            max-height: 90%;
+            overflow-y: auto;
+            display: none;
+        }
+        
+        .preview-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        
+        .close-btn {
+            background: var(--danger);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        
+        .highlight {
+            background: yellow;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: var(--primary);
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+        }
+        
+        .tab.active {
+            border-bottom-color: var(--primary);
+            color: var(--primary);
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔍 سیستم جستجوی پیشرفته تتراشاپ</h1>
+            <p>جستجوی هوشمند در تمام صفحات، محتوا و آپشن‌های پروژه</p>
+        </div>
+
+        <div class="search-interface">
+            <div class="card">
+                <h3>⚙️ تنظیمات جستجو</h3>
+                
+                <div class="form-group">
+                    <label for="searchType">نوع جستجو:</label>
+                    <select id="searchType" class="combobox">
+                        <option value="all">همه موارد</option>
+                        <option value="pages">صفحات</option>
+                        <option value="content">محتوا</option>
+                        <option value="products">محصولات</option>
+                        <option value="users">کاربران</option>
+                        <option value="orders">سفارشات</option>
+                        <option value="api">API ها</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="pageSelector">انتخاب صفحه:</label>
+                    <select id="pageSelector" class="combobox">
+                        <option value="all">همه صفحات</option>
+                        <option value="index-complete.html">نمای کامل پروژه</option>
+                        <option value="index-advanced-fixed.html">نسخه پیشرفته</option>
+                        <option value="index-test.html">نسخه تستی</option>
+                        <option value="index.html">صفحه اصلی</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="searchQuery">عبارت جستجو:</label>
+                    <input type="text" id="searchQuery" class="search-input" 
+                           placeholder="عبارت مورد نظر را وارد کنید...">
+                </div>
+
+                <div class="form-group">
+                    <label for="resultLimit">تعداد نتایج:</label>
+                    <select id="resultLimit" class="combobox">
+                        <option value="10">10 نتیجه</option>
+                        <option value="25" selected>25 نتیجه</option>
+                        <option value="50">50 نتیجه</option>
+                        <option value="100">100 نتیجه</option>
+                    </select>
+                </div>
+
+                <button class="btn btn-primary" onclick="performAdvancedSearch()">
+                    🔍 اجرای جستجوی پیشرفته
+                </button>
+
+                <div style="margin-top: 20px; padding: 15px; background: #f0fff4; border-radius: 8px;">
+                    <h4>📊 آمار سیستم</h4>
+                    <div id="systemStats">در حال بارگذاری...</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="tabs">
+                    <div class="tab active" onclick="switchTab('results')">نتایج جستجو</div>
+                    <div class="tab" onclick="switchTab('preview')">پیش‌نمایش</div>
+                    <div class="tab" onclick="switchTab('analytics')">تحلیل‌ها</div>
+                </div>
+
+                <div id="resultsTab" class="tab-content">
+                    <h3>📋 نتایج جستجو</h3>
+                    <div id="searchResults" class="results-container">
+                        <div class="loading">
+                            🔍 نتایج جستجو اینجا نمایش داده می‌شوند...
+                        </div>
+                    </div>
+                </div>
+
+                <div id="previewTab" class="tab-content" style="display: none;">
+                    <h3>👁️ پیش‌نمایش صفحات</h3>
+                    <div id="pagePreviews" class="results-container">
+                        <div class="loading">
+                            🖼️ پیش‌نمایش صفحات اینجا نمایش داده می‌شود...
+                        </div>
+                    </div>
+                </div>
+
+                <div id="analyticsTab" class="tab-content" style="display: none;">
+                    <h3>📈 تحلیل‌های جستجو</h3>
+                    <div id="searchAnalytics" class="results-container">
+                        <div class="loading">
+                            📊 آمار و تحلیل‌ها اینجا نمایش داده می‌شود...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="previewPanel" class="preview-panel">
+        <div class="preview-header">
+            <h3 id="previewTitle">پیش‌نمایش</h3>
+            <button class="close-btn" onclick="closePreview()">✕ بستن</button>
+        </div>
+        <div id="previewContent">
+            محتوای پیش‌نمایش اینجا نمایش داده می‌شود...
+        </div>
+    </div>
+
+    <script>
+        // پایگاه داده صفحات و محتوا
+        const pageDatabase = {
+            'index-complete.html': {
+                id: 'complete',
+                title: 'نمای کامل پروژه',
+                type: 'dashboard',
+                description: 'داشبورد مدیریت کامل پروژه تتراشاپ',
+                content: 'سیستم مدیریت، کش پیشرفته، نمایش وضعیت، آنالیز عملکرد',
+                tags: ['مدیریت', 'داشبورد', 'کش', 'آنالیز'],
+                lastUpdate: '2025-01-20',
+                size: '45KB'
+            },
+            'index-advanced-fixed.html': {
+                id: 'advanced',
+                title: 'نسخه پیشرفته',
+                type: 'application',
+                description: 'سیستم پیشرفته با قابلیت کش و جستجو',
+                content: 'جستجوی پیشرفته، مدیریت کش، ذخیره‌سازی محلی، عملکرد بهینه',
+                tags: ['جستجو', 'کش', 'پیشرفته', 'عملکرد'],
+                lastUpdate: '2025-01-20',
+                size: '38KB'
+            },
+            'index-test.html': {
+                id: 'test',
+                title: 'نسخه تستی',
+                type: 'test',
+                description: 'صفحه تست و توسعه ویژگی‌ها',
+                content: 'تست عملکرد، توسعه ویژگی‌های جدید، آزمایش رابط کاربری',
+                tags: ['تست', 'توسعه', 'آزمایش'],
+                lastUpdate: '2025-01-19',
+                size: '22KB'
+            },
+            'index.html': {
+                id: 'main',
+                title: 'صفحه اصلی',
+                type: 'landing',
+                description: 'صفحه اصلی و مرکزی پروژه',
+                content: 'معرفی پروژه، دسترسی سریع، راهنمایی کاربران',
+                tags: ['اصلی', 'لندینگ', 'معرفی'],
+                lastUpdate: '2025-01-20',
+                size: '28KB'
+            }
+        };
+
+        // سیستم جستجوی پیشرفته
+        const advancedSearch = {
+            // جستجو در پایگاه داده
+            search: function(query, type = 'all', page = 'all', limit = 25) {
+                const results = [];
+                const searchTerms = query.toLowerCase().split(' ').filter(term => term.length > 2);
+                
+                if (searchTerms.length === 0) {
+                    return this.getAllResults(limit);
+                }
+
+                // جستجو در صفحات
+                Object.entries(pageDatabase).forEach(([pageName, pageData]) => {
+                    if (page !== 'all' && page !== pageName) return;
+                    
+                    let relevance = 0;
+                    const matches = [];
+                    
+                    // محاسبه مرتبط بودن
+                    searchTerms.forEach(term => {
+                        const fields = [
+                            pageData.title,
+                            pageData.description,
+                            pageData.content,
+                            ...pageData.tags,
+                            pageName
+                        ];
+                        
+                        fields.forEach(field => {
+                            if (field.toLowerCase().includes(term)) {
+                                relevance += 2;
+                                matches.push({
+                                    field: field,
+                                    term: term,
+                                    context: this.getContext(field, term)
+                                });
+                            }
+                        });
+                    });
+                    
+                    if (relevance > 0) {
+                        results.push({
+                            page: pageName,
+                            data: pageData,
+                            relevance: relevance,
+                            matches: matches,
+                            score: this.calculateScore(relevance, matches.length, pageData)
+                        });
+                    }
+                });
+                
+                // مرتب‌سازی بر اساس امتیاز
+                return results
+                    .sort((a, b) => b.score - a.score)
+                    .slice(0, limit);
+            },
+            
+            // محاسبه امتیاز
+            calculateScore: function(relevance, matchCount, pageData) {
+                let score = relevance * 10;
+                score += matchCount * 5;
+                
+                // امتیاز بر اساس نوع صفحه
+                const typeWeights = {
+                    'dashboard': 1.5,
+                    'application': 1.3,
+                    'landing': 1.1,
+                    'test': 0.8
+                };
+                
+                score *= typeWeights[pageData.type] || 1;
+                return Math.round(score);
+            },
+            
+            // دریافت متن اطراف کلمه کلیدی
+            getContext: function(text, term, contextLength = 30) {
+                const index = text.toLowerCase().indexOf(term.toLowerCase());
+                if (index === -1) return text.substring(0, contextLength);
+                
+                const start = Math.max(0, index - contextLength);
+                const end = Math.min(text.length, index + term.length + contextLength);
+                
+                let context = text.substring(start, end);
+                if (start > 0) context = '...' + context;
+                if (end < text.length) context = context + '...';
+                
+                return context;
+            },
+            
+            // هایلایت کردن کلمات
+            highlightText: function(text, terms) {
+                let highlighted = text;
+                terms.forEach(term => {
+                    const regex = new RegExp(`(${term})`, 'gi');
+                    highlighted = highlighted.replace(regex, '<mark class="highlight">$1</mark>');
+                });
+                return highlighted;
+            },
+            
+            // دریافت همه نتایج
+            getAllResults: function(limit) {
+                return Object.entries(pageDatabase)
+                    .map(([pageName, pageData]) => ({
+                        page: pageName,
+                        data: pageData,
+                        relevance: 1,
+                        matches: [],
+                        score: 10
+                    }))
+                    .slice(0, limit);
+            },
+            
+            // آنالیز جستجو
+            getAnalytics: function(results, query) {
+                const totalResults = results.length;
+                const pageTypes = {};
+                const tagCounts = {};
+                
+                results.forEach(result => {
+                    // شمارش انواع صفحات
+                    pageTypes[result.data.type] = (pageTypes[result.data.type] || 0) + 1;
+                    
+                    // شمارش تگ‌ها
+                    result.data.tags.forEach(tag => {
+                        tagCounts[tag] = (tagCounts[tag] || 0) + 1;
+                    });
+                });
+                
+                return {
+                    totalResults,
+                    pageTypes,
+                    tagCounts,
+                    query: query,
+                    searchTime: new Date().toLocaleString('fa-IR')
+                };
+            }
+        };
+
+        // عملکردهای رابط کاربری
+        function performAdvancedSearch() {
+            const query = document.getElementById('searchQuery').value.trim();
+            const searchType = document.getElementById('searchType').value;
+            const pageSelector = document.getElementById('pageSelector').value;
+            const resultLimit = parseInt(document.getElementById('resultLimit').value);
+            
+            const results = advancedSearch.search(query, searchType, pageSelector, resultLimit);
+            displaySearchResults(results, query);
+            updateSystemStats(results.length);
+            
+            // نمایش تحلیل‌ها
+            const analytics = advancedSearch.getAnalytics(results, query);
+            displayAnalytics(analytics);
+        }
+        
+        function displaySearchResults(results, query) {
+            const container = document.getElementById('searchResults');
+            const searchTerms = query.toLowerCase().split(' ').filter(term => term.length > 2);
+            
+            if (results.length === 0) {
+                container.innerHTML = `
+                    <div class="result-item">
+                        <div class="result-title">🔍 نتیجه‌ای یافت نشد</div>
+                        <div class="result-content">
+                            هیچ نتیجه‌ای برای "${query}" پیدا نشد.
+                            <br>پیشنهادات:
+                            <ul>
+                                <li>عبارت جستجو را تغییر دهید</li>
+                                <li>از کلمات کلیدی عمومی‌تر استفاده کنید</li>
+                                <li>نوع جستجو را تغییر دهید</li>
+                            </ul>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = results.map(result => {
+                const highlightedTitle = advancedSearch.highlightText(result.data.title, searchTerms);
+                const highlightedDesc = advancedSearch.highlightText(result.data.description, searchTerms);
+                
+                return `
+                    <div class="result-item">
+                        <div class="result-header">
+                            <div class="result-title">${highlightedTitle}</div>
+                            <div style="color: #48bb78; font-weight: bold;">
+                                امتیاز: ${result.score}
+                            </div>
+                        </div>
+                        
+                        <div class="result-meta">
+                            <span>📁 صفحه: ${result.page}</span>
+                            <span>🏷️ نوع: ${result.data.type}</span>
+                            <span>📅 بروزرسانی: ${result.data.lastUpdate}</span>
+                            <span>📊 حجم: ${result.data.size}</span>
+                        </div>
+                        
+                        <div class="result-content">
+                            <strong>توضیحات:</strong> ${highlightedDesc}
+                        </div>
+                        
+                        <div class="result-details">
+                            <strong>🔗 مطابقت‌ها (${result.matches.length} مورد):</strong>
+                            ${result.matches.map(match => `
+                                <div class="detail-item">
+                                    <strong>${match.field}:</strong> 
+                                    ${advancedSearch.highlightText(match.context, searchTerms)}
+                                </div>
+                            `).join('')}
+                        </div>
+                        
+                        <div class="detail-grid">
+                            <div class="detail-item">🏷️ تگ‌ها: ${result.data.tags.join(', ')}</div>
+                            <div class="detail-item">⭐ مرتبط بودن: ${result.relevance}</div>
+                            <div class="detail-item">🔍 مطابقت‌ها: ${result.matches.length}</div>
+                        </div>
+                        
+                        <button class="btn" onclick="showPreview('${result.page}')" 
+                                style="background: var(--info); color: white; margin-top: 10px;">
+                            👁️ پیش‌نمایش صفحه
+                        </button>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        function displayAnalytics(analytics) {
+            const container = document.getElementById('searchAnalytics');
+            
+            const pageTypesHTML = Object.entries(analytics.pageTypes)
+                .map(([type, count]) => `<div class="detail-item">${type}: ${count} مورد</div>`)
+                .join('');
+                
+            const tagsHTML = Object.entries(analytics.tagCounts)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 10)
+                .map(([tag, count]) => `<div class="detail-item">${tag}: ${count} بار</div>`)
+                .join('');
+            
+            container.innerHTML = `
+                <div class="result-item">
+                    <h4>📊 آمار کلی جستجو</h4>
+                    <div class="detail-grid">
+                        <div class="detail-item">🔍 عبارت: ${analytics.query || 'همه موارد'}</div>
+                        <div class="detail-item">📈 تعداد نتایج: ${analytics.totalResults}</div>
+                        <div class="detail-item">🕒 زمان جستجو: ${analytics.searchTime}</div>
+                    </div>
+                </div>
+                
+                <div class="result-item">
+                    <h4>📁 توزیع بر اساس نوع صفحه</h4>
+                    <div class="detail-grid">
+                        ${pageTypesHTML}
+                    </div>
+                </div>
+                
+                <div class="result-item">
+                    <h4>🏷️ پرتکرارترین تگ‌ها</h4>
+                    <div class="detail-grid">
+                        ${tagsHTML}
+                    </div>
+                </div>
+            `;
+        }
+        
+        function showPreview(pageName) {
+            const pageData = pageDatabase[pageName];
+            const previewPanel = document.getElementById('previewPanel');
+            const previewTitle = document.getElementById('previewTitle');
+            const previewContent = document.getElementById('previewContent');
+            
+            previewTitle.textContent = `پیش‌نمایش: ${pageData.title}`;
+            
+            previewContent.innerHTML = `
+                <div style="margin-bottom: 20px;">
+                    <strong>📁 صفحه:</strong> ${pageName}<br>
+                    <strong>🏷️ نوع:</strong> ${pageData.type}<br>
+                    <strong>📅 آخرین بروزرسانی:</strong> ${pageData.lastUpdate}<br>
+                    <strong>📊 حجم:</strong> ${pageData.size}
+                </div>
+                
+                <div style="margin-bottom: 20px;">
+                    <strong>📋 توضیحات:</strong><br>
+                    ${pageData.description}
+                </div>
+                
+                <div style="margin-bottom: 20px;">
+                    <strong>📝 محتوا:</strong><br>
+                    ${pageData.content}
+                </div>
+                
+                <div>
+                    <strong>🏷️ تگ‌ها:</strong><br>
+                    ${pageData.tags.map(tag => `<span style="background: #e2e8f0; padding: 4px 8px; border-radius: 4px; margin: 2px; display: inline-block;">${tag}</span>`).join('')}
+                </div>
+                
+                <div style="margin-top: 20px; text-align: center;">
+                    <button class="btn btn-primary" onclick="openPage('${pageName}')">
+                        🚀 بازکردن صفحه
+                    </button>
+                </div>
+            `;
+            
+            previewPanel.style.display = 'block';
+        }
+        
+        function closePreview() {
+            document.getElementById('previewPanel').style.display = 'none';
+        }
+        
+        function openPage(pageName) {
+            window.open(pageName, '_blank');
+        }
+        
+        function switchTab(tabName) {
+            // مخفی کردن همه تب‌ها
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.style.display = 'none';
+            });
+            
+            // غیرفعال کردن همه تب‌ها
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // نمایش تب انتخاب شده
+            document.getElementById(tabName + 'Tab').style.display = 'block';
+            event.target.classList.add('active');
+        }
+        
+        function updateSystemStats(resultCount) {
+            const statsElement = document.getElementById('systemStats');
+            const totalPages = Object.keys(pageDatabase).length;
+            const totalTags = new Set(Object.values(pageDatabase).flatMap(page => page.tags)).size;
+            
+            statsElement.innerHTML = `
+                📊 صفحات索引شده: ${totalPages}<br>
+                🏷️ تگ‌های منحصر: ${totalTags}<br>
+                🔍 نتایج اخیر: ${resultCount}<br>
+                🚀 وضعیت: فعال
+            `;
+        }
+        
+        // راه‌اندازی اولیه
+        document.addEventListener('DOMContentLoaded', function() {
+            updateSystemStats(0);
+            console.log('🔍 سیستم جستجوی پیشرفته راه‌اندازی شد');
+        });
+    </script>
+</body>
+</html>

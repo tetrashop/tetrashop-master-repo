@@ -1,0 +1,12 @@
+{
+  "name": "tetrashop-frontend",
+  "version": "1.0.0",
+  "description": "Tetrashop Frontend",
+  "scripts": {
+    "dev": "python3 -m http.server 8000",
+    "build": "echo 'No build step needed for static site'",
+    "start": "python3 -m http.server 8000"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}

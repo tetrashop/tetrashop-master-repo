@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تتراشاپ - نسخه پیشرفته (رفع خطا)</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            direction: rtl;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .cache-stats {
+            background: #e6fffa;
+            border: 2px solid #38b2ac;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px 0;
+            font-size: 14px;
+        }
+        
+        .cache-hit {
+            background: #c6f6d5;
+            color: #22543d;
+            padding: 10px;
+            border-radius: 6px;
+            margin: 10px 0;
+        }
+        
+        .cache-miss {
+            background: #fed7d7;
+            color: #742a2a;
+            padding: 10px;
+            border-radius: 6px;
+            margin: 10px 0;
+        }
+        
+        .search-box {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+        
+        .search-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+            transition: background 0.3s;
+        }
+        
+        .search-btn:hover {
+            background: #5a67d8;
+        }
+        
+        .search-btn:disabled {
+            background: #a0aec0;
+            cursor: not-allowed;
+        }
+        
+        .result-item {
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            background: #f7fafc;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .btn-danger {
+            background: #f56565;
+            color: white;
+        }
+        
+        .btn-success {
+            background: #48bb78;
+            color: white;
+        }
+        
+        .btn-info {
+            background: #4299e1;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🛍️ تتراشاپ - نسخه پیشرفته (رفع خطا)</h1>
+            <div class="cache-stats" id="cacheStats">
+                📊 وضعیت کش: در حال بارگذاری...
+            </div>
+        </div>
+        
+        <div class="search-box">
+            <h3>🔍 جستجوی پیشرفته</h3>
+            <input type="text" id="searchInput" class="search-input" 
+                   placeholder="عبارت جستجو..." 
+                   value="رامین اجلال">
+            <button id="searchBtn" class="search-btn">
+                🔍 اجرای جستجو
+            </button>
+            
+            <div class="btn-group">
+                <button class="btn btn-danger" onclick="clearCache()">
+                    🗑️ پاک کردن کش
+                </button>
+                <button class="btn btn-success" onclick="viewCache()">
+                    👁️ مشاهده کش
+                </button>
+                <button class="btn btn-info" onclick="testCache()">
+                    🧪 تست کش
+                </button>
+            </div>
+        </div>
+        
+        <div id="results" style="background: white; border-radius: 15px; padding: 25px;">
+            <div style="text-align: center; color: #667eea;">
+                🔍 نتایج اینجا نمایش داده می‌شود...
+            </div>
+        </div>
+        
+        <div id="cacheView" style="display: none; background: #f7fafc; border-radius: 15px; padding: 20px; margin-top: 15px;">
+            <h4>👁️ محتوای کش</h4>
+            <div id="cacheContent"></div>
+        </div>
+    </div>
+
+    <script>
+        // سیستم کش پیشرفته - نسخه اصلاح شده
+        const searchCache = {
+            set: function(query, results, ttl = 5 * 60 * 1000) {
+                try {
+                    const item = {
+                        data: results,
+                        expiry: Date.now() + ttl,
+                        timestamp: new Date().toLocaleString('fa-IR')
+                    };
+                    localStorage.setItem(`search_${query}`, JSON.stringify(item));
+                    this.updateStats();
+                    return true;
+                } catch (error) {
+                    console.error('خطا در ذخیره کش:', error);
+                    return false;
+                }
+            },
+            
+            get: function(query) {
+                try {
+                    const itemStr = localStorage.getItem(`search_${query}`);
+                    if (!itemStr) return null;
+                    
+                    const item = JSON.parse(itemStr);
+                    if (Date.now() > item.expiry) {
+                        localStorage.removeItem(`search_${query}`);
+                        return null;
+                    }
+                    
+                    return item;
+                } catch (error) {
+                    console.error('خطا در خواندن کش:', error);
+                    return null;
+                }
+            },
+            
+            clear: function() {
+                try {
+                    const keysToRemove = [];
+                    for (let i = 0; i < localStorage.length; i++) {
+                        const key = localStorage.key(i);
+                        if (key && key.startsWith('search_')) {
+                            keysToRemove.push(key);
+                        }
+                    }
+                    
+                    keysToRemove.forEach(key => {
+                        localStorage.removeItem(key);
+                    });
+                    
+                    this.updateStats();
+                    return true;
+                } catch (error) {
+                    console.error('خطا در پاک کردن کش:', error);
+                    return false;
+                }
+            },
+            
+            getAll: function() {
+                const items = [];
+                try {
+                    for (let i = 0; i < localStorage.length; i++) {
+                        const key = localStorage.key(i);
+                        if (key && key.startsWith('search_')) {
+                            const itemStr = localStorage.getItem(key);
+                            if (itemStr) {
+                                const item = JSON.parse(itemStr);
+                                if (Date.now() <= item.expiry) {
+                                    items.push({
+                                        query: key.replace('search_', ''),
+                                        data: item.data,
+                                        timestamp: item.timestamp
+                                    });
+                                }
+                            }
+                        }
+                    }
+                } catch (error) {
+                    console.error('خطا در دریافت لیست کش:', error);
+                }
+                return items;
+            },
+            
+            updateStats: function() {
+                try {
+                    const items = this.getAll();
+                    const statsElement = document.getElementById('cacheStats');
+                    if (statsElement) {
+                        if (items.length === 0) {
+                            statsElement.innerHTML = '📊 وضعیت کش: خالی';
+                            statsElement.style.background = '#fed7d7';
+                            statsElement.style.borderColor = '#f56565';
+                        } else {
+                            statsElement.innerHTML = `
+                                📊 وضعیت کش: ${items.length} جستجوی ذخیره شده
+                                <br>
+                                <small>آخرین: "${items[0].query}" (${items[0].timestamp})</small>
+                            `;
+                            statsElement.style.background = '#f0fff4';
+                            statsElement.style.borderColor = '#48bb78';
+                        }
+                    }
+                } catch (error) {
+                    console.error('خطا در بروزرسانی آمار:', error);
+                }
+            }
+        };
+
+        // عملکردهای اصلی
+        async function performSearch() {
+            const query = document.getElementById('searchInput').value.trim();
+            const searchBtn = document.getElementById('searchBtn');
+            const resultsElement = document.getElementById('results');
+            
+            if (!query) {
+                alert('لطفاً عبارت جستجو را وارد کنید');
+                return;
+            }
+            
+            // غیرفعال کردن دکمه
+            searchBtn.disabled = true;
+            searchBtn.textContent = '⏳ در حال جستجو...';
+            
+            try {
+                // چک کردن کش
+                const cached = searchCache.get(query);
+                if (cached) {
+                    resultsElement.innerHTML = `
+                        <div class="cache-hit">
+                            ✅ <strong>نتیجه از کش بازیابی شد</strong><br>
+                            ذخیره شده در: ${cached.timestamp}
+                        </div>
+                        ${renderResults(cached.data, query)}
+                    `;
+                    return;
+                }
+                
+                resultsElement.innerHTML = '<div style="text-align: center; padding: 20px;">⏳ در حال جستجو...</div>';
+                
+                // شبیه‌سازی درخواست به API
+                const mockData = {
+                    success: true,
+                    data: {
+                        results: [
+                            {
+                                title: "نتیجه تستی ۱ برای '" + query + "'",
+                                content: "این یک نتیجه تستی برای نمایش کارکرد سیستم است",
+                                relevance: 0.95
+                            },
+                            {
+                                title: "نتیجه تستی ۲ برای '" + query + "'", 
+                                content: "نتیجه دوم برای اطمینان از عملکرد صحیح",
+                                relevance: 0.87
+                            },
+                            {
+                                title: "نتیجه تستی ۳ برای '" + query + "'",
+                                content: "سومین نتیجه برای تست سیستم کش",
+                                relevance: 0.78
+                            }
+                        ]
+                    }
+                };
+                
+                // تأخیر شبیه‌سازی شده
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                // ذخیره در کش
+                searchCache.set(query, mockData);
+                
+                resultsElement.innerHTML = `
+                    <div class="cache-miss">
+                        🔄 <strong>نتیجه از سرور دریافت و در کش ذخیره شد</strong>
+                    </div>
+                    ${renderResults(mockData, query)}
+                `;
+                
+            } catch (error) {
+                console.error('خطای جستجو:', error);
+                resultsElement.innerHTML = `
+                    <div class="cache-miss">
+                        ❌ خطا در جستجو: ${error.message}
+                    </div>
+                `;
+            } finally {
+                // فعال کردن دکمه
+                searchBtn.disabled = false;
+                searchBtn.textContent = '🔍 اجرای جستجو';
+            }
+        }
+
+        function renderResults(data, query) {
+            if (data.success && data.data && data.data.results) {
+                return `
+                    <h4 style="margin: 20px 0 15px 0; color: #2d3748;">📊 نتایج برای "${query}"</h4>
+                    ${data.data.results.map((result, index) => `
+                        <div class="result-item">
+                            <div style="font-weight: bold; margin-bottom: 8px; color: #2d3748;">
+                                ${result.title}
+                            </div>
+                            <div style="color: #4a5568; margin-bottom: 8px;">
+                                ${result.content}
+                            </div>
+                            <div style="color: #667eea; font-size: 14px;">
+                                🔗 میزان ارتباط: ${Math.round((result.relevance || 0.8) * 100)}%
+                            </div>
+                        </div>
+                    `).join('')}
+                `;
+            }
+            return `<div class="result-item">نتیجه‌ای یافت نشد</div>`;
+        }
+
+        function clearCache() {
+            if (searchCache.clear()) {
+                alert('✅ کش با موفقیت پاک شد');
+            } else {
+                alert('❌ خطا در پاک کردن کش');
+            }
+        }
+
+        function viewCache() {
+            const cacheView = document.getElementById('cacheView');
+            const cacheContent = document.getElementById('cacheContent');
+            const cachedItems = searchCache.getAll();
+            
+            if (cachedItems.length === 0) {
+                cacheContent.innerHTML = '<div style="text-align: center; color: #718096;">کش خالی است</div>';
+            } else {
+                cacheContent.innerHTML = cachedItems.map(item => `
+                    <div class="result-item">
+                        <strong>🔍 "${item.query}"</strong>
+                        <div style="font-size: 12px; color: #718096; margin-top: 5px;">
+                            📅 ذخیره شده: ${item.timestamp}
+                        </div>
+                        <div style="font-size: 12px; color: #667eea;">
+                            📊 تعداد نتایج: ${item.data.data.results.length}
+                        </div>
+                    </div>
+                `).join('');
+            }
+            
+            cacheView.style.display = 'block';
+        }
+
+        function testCache() {
+            const testQuery = 'تست سیستم ' + new Date().getTime();
+            const testData = {
+                success: true,
+                data: {
+                    results: [{
+                        title: "نتیجه تست",
+                        content: "این یک تست برای بررسی عملکرد کش است",
+                        relevance: 0.99
+                    }]
+                }
+            };
+            
+            if (searchCache.set(testQuery, testData)) {
+                alert('✅ تست کش موفقیت‌آمیز بود');
+            } else {
+                alert('❌ خطا در تست کش');
+            }
+        }
+
+        // راه‌اندازی اولیه
+        document.addEventListener('DOMContentLoaded', function() {
+            // بروزرسانی آمار کش
+            searchCache.updateStats();
+            
+            // افزودن event listener به دکمه جستجو
+            document.getElementById('searchBtn').addEventListener('click', performSearch);
+            
+            // افزودن event listener به input برای کلید Enter
+            document.getElementById('searchInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    performSearch();
+                }
+            });
+            
+            console.log('✅ سیستم کش پیشرفته راه‌اندازی شد');
+        });
+    </script>
+</body>
+</html>

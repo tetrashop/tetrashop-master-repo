@@ -1,0 +1,37 @@
+{
+  "known_issues": {
+    "git_conflicts": {
+      "detection": "git status | grep -i conflict",
+      "fix_command": "git add . && git commit -m 'Auto-resolve conflicts'",
+      "severity": "high"
+    },
+    "port_conflicts": {
+      "detection": "netstat -tulpn | grep -E '(8000|3003)' | grep -v grep",
+      "fix_command": "pkill -f 'python3\\|node' && sleep 2",
+      "severity": "medium"
+    },
+    "cache_corruption": {
+      "detection": "grep -r 'localStorage' public/ | grep -i error",
+      "fix_command": "echo 'localStorage.clear()' > public/cache-fix.js",
+      "severity": "low"
+    },
+    "service_down": {
+      "detection": "! ps aux | grep -E '(python3.*8000|node.*3003)' | grep -v grep",
+      "fix_command": "cd public && python3 -m http.server 8000 & && node simple-proxy.js &",
+      "severity": "critical"
+    }
+  },
+  "optimization_rules": {
+    "performance": {
+      "check": "find public/ -name '*.html' -exec grep -l 'console.log' {} \\;",
+      "action": "sed -i 's/console.log/\\/\\/ console.log/g'",
+      "description": "حذف لاگ‌های کنسول برای تولید"
+    },
+    "security": {
+      "check": "grep -r 'password\\|token\\|key' public/ --include='*.js' --include='*.html'",
+      "action": "echo '⚠️ اطلاعات حساس شناسایی شد'",
+      "description": "بررسی اطلاعات حساس"
+    }
+  },
+  "version": "1.0.1762888746"
+}

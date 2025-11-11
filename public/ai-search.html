@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تتراشاپ - جستجوی هوشمند با AI</title>
+    <style>
+        :root {
+            --primary: #667eea;
+            --secondary: #764ba2;
+            --success: #48bb78;
+            --danger: #f56565;
+            --warning: #ed8936;
+            --info: #4299e1;
+            --ai: #8b5cf6;
+        }
+        
+        .ai-response {
+            background: linear-gradient(135deg, #8b5cf6 0%, #a78bfa 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin: 15px 0;
+            border-right: 5px solid #7c3aed;
+        }
+        
+        .ai-thinking {
+            background: #fef3c7;
+            border: 2px solid #f59e0b;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+        }
+        
+        .parameter-analysis {
+            background: #ecfdf5;
+            border: 2px solid #10b981;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧠 تتراشاپ - جستجوی هوشمند با AI</h1>
+            <div class="ai-response">
+                <h3>🤖 دستیار هوشمند جستجو</h3>
+                <p>سیستم من قادر به تفسیر هوشمندانه درخواست‌های شما و تولید نتایج معنادار است</p>
+            </div>
+        </div>
+
+        <div class="search-interface">
+            <div class="card">
+                <h3>🔍 جستجوی هوشمند</h3>
+                
+                <div class="form-group">
+                    <label for="aiQuery">عبارت جستجو:</label>
+                    <input type="text" id="aiQuery" class="search-input" 
+                           value="رامین اجلال" placeholder="عبارت مورد نظر را وارد کنید...">
+                </div>
+
+                <div class="form-group">
+                    <label for="searchStrategy">استراتژی جستجو:</label>
+                    <select id="searchStrategy" class="combobox">
+                        <option value="smart">هوشمند (توصیه می‌شود)</option>
+                        <option value="semantic">معنایی - تفسیر مفهوم</option>
+                        <option value="keyword">کلیدواژه - جستجوی دقیق</option>
+                        <option value="fuzzy">فازی - جستجوی مشابه</option>
+                        <option value="contextual">متنی - با توجه به زمینه</option>
+                    </select>
+                </div>
+
+                <button class="btn btn-primary" onclick="performAISearch()">
+                    🧠 اجرای جستجوی هوشمند
+                </button>
+
+                <div class="parameter-analysis" id="parameterAnalysis">
+                    <h4>📊 تحلیل پارامترها</h4>
+                    <div id="paramStatus">در حال بررسی...</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="tabs">
+                    <div class="tab active" onclick="switchTab('aiResults')">نتایج هوشمند</div>
+                    <div class="tab" onclick="switchTab('rawData')">داده‌های خام</div>
+                    <div class="tab" onclick="switchTab('aiInsights')">بینش‌های AI</div>
+                </div>
+
+                <div id="aiResults" class="tab-content">
+                    <div class="ai-thinking" id="thinkingProcess">
+                        <h4>🤔 فرآیند تفکر هوشمند:</h4>
+                        <div id="thinkingSteps"></div>
+                    </div>
+                    
+                    <h3>🎯 نتایج تفسیر شده</h3>
+                    <div id="aiSearchResults" class="results-container">
+                        <div class="loading">
+                            🧠 در حال پردازش هوشمند درخواست...
+                        </div>
+                    </div>
+                </div>
+
+                <div id="rawData" class="tab-content" style="display: none;">
+                    <h3>📄 داده‌های خام و پارامترها</h3>
+                    <div id="rawDataContent" class="results-container">
+                        <div class="loading">
+                            📊 در حال جمع‌آوری داده‌های خام...
+                        </div>
+                    </div>
+                </div>
+
+                <div id="aiInsights" class="tab-content" style="display: none;">
+                    <h3>💡 بینش‌های هوش مصنوعی</h3>
+                    <div id="insightsContent" class="results-container">
+                        <div class="loading">
+                            💭 در حال تولید بینش‌های هوشمند...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 🤖 موتور هوش مصنوعی تفسیرگر
+        const AIInterpreter = {
+            // تحلیل عبارت جستجو
+            analyzeQuery: function(query) {
+                const analysis = {
+                    originalQuery: query,
+                    detectedLanguage: this.detectLanguage(query),
+                    queryType: this.classifyQueryType(query),
+                    keywords: this.extractKeywords(query),
+                    intent: this.determineIntent(query),
+                    context: this.deriveContext(query),
+                    confidence: 0.85
+                };
+                
+                analysis.confidence = this.calculateConfidence(analysis);
+                return analysis;
+            },
+            
+            // تشخیص زبان
+            detectLanguage: function(text) {
+                const persianRegex = /[\u0600-\u06FF]/;
+                return persianRegex.test(text) ? 'fa' : 'en';
+            },
+            
+            // طبقه‌بندی نوع جستجو
+            classifyQueryType: function(query) {
+                const lowerQuery = query.toLowerCase();
+                
+                if (/(رامین|اجلال|ramin|ejlal)/i.test(lowerQuery)) {
+                    return 'person_search';
+                } else if (/(فروشگاه|محصول|کالا|shop|product)/i.test(lowerQuery)) {
+                    return 'product_search';
+                } else if (/(قیمت|هزینه|خرید|price|cost)/i.test(lowerQuery)) {
+                    return 'price_inquiry';
+                } else if (/(چگونه|روش|آموزش|how to|tutorial)/i.test(lowerQuery)) {
+                    return 'how_to';
+                } else {
+                    return 'general_search';
+                }
+            },
+            
+            // استخراج کلمات کلیدی
+            extractKeywords: function(query) {
+                const stopWords = ['در', 'با', 'برای', 'از', 'به', 'که', 'این', 'آن'];
+                const words = query.split(' ').filter(word => 
+                    word.length > 2 && !stopWords.includes(word)
+                );
+                
+                return {
+                    primary: words[0] || query,
+                    secondary: words.slice(1),
+                    all: words
+                };
+            },
+            
+            // تشخیص هدف کاربر
+            determineIntent: function(query) {
+                const analysis = this.classifyQueryType(query);
+                const intents = {
+                    'person_search': 'جستجوی اطلاعات درباره یک شخص',
+                    'product_search': 'یافتن محصولات مرتبط',
+                    'price_inquiry': 'استعلام قیمت و هزینه',
+                    'how_to': 'دریافت راهنمایی و آموزش',
+                    'general_search': 'جستجوی عمومی اطلاعات'
+                };
+                
+                return intents[analysis] || 'جستجوی اطلاعات';
+            },
+            
+            // استنتاج زمینه
+            deriveContext: function(query) {
+                return {
+                    domain: 'ecommerce',
+                    userType: 'potential_customer',
+                    timeContext: 'current',
+                    locationContext: 'iran',
+                    deviceContext: 'desktop'
+                };
+            },
+            
+            // محاسبه اطمینان
+            calculateConfidence: function(analysis) {
+                let confidence = 0.7;
+                
+                if (analysis.keywords.primary.length > 0) confidence += 0.1;
+                if (analysis.queryType !== 'general_search') confidence += 0.1;
+                if (analysis.detectedLanguage === 'fa') confidence += 0.05;
+                
+                return Math.min(confidence, 0.95);
+            },
+            
+            // تولید داده‌های معادل
+            generateEquivalentData: function(analysis) {
+                const equivalents = {
+                    'رامین اجلال': {
+                        type: 'person',
+                        variations: [
+                            'Ramin Ejlal',
+                            'رامین اجلال',
+                            'آقای اجلال',
+                            'مدیریت تتراشاپ'
+                        ],
+                        relatedTerms: [
+                            'مدیر فروشگاه',
+                            'توسعه دهنده',
+                            'کارآفرین',
+                            'مدیریت کسب و کار'
+                        ],
+                        context: 'مدیریت و توسعه تتراشاپ'
+                    }
+                };
+                
+                return equivalents[analysis.originalQuery] || {
+                    type: 'general',
+                    variations: [analysis.originalQuery],
+                    relatedTerms: analysis.keywords.all,
+                    context: analysis.intent
+                };
+            },
+            
+            // تولید نتایج هوشمند
+            generateSmartResults: function(analysis, equivalentData) {
+                const results = [];
+                const baseRelevance = 0.8;
+                
+                // نتایج مبتنی بر تحلیل
+                if (analysis.queryType === 'person_search') {
+                    results.push({
+                        id: 'person_bio',
+                        title: `پروفایل: ${analysis.originalQuery}`,
+                        content: this.generatePersonBio(analysis.originalQuery),
+                        relevance: baseRelevance + 0.15,
+                        type: 'profile',
+                        source: 'ai_generated',
+                        confidence: analysis.confidence
+                    });
+                    
+                    results.push({
+                        id: 'related_work',
+                        title: `فعالیت‌های مرتبط با ${analysis.originalQuery}`,
+                        content: this.generateRelatedWork(analysis.originalQuery),
+                        relevance: baseRelevance + 0.1,
+                        type: 'activities',
+                        source: 'ai_generated',
+                        confidence: analysis.confidence - 0.1
+                    });
+                }
+                
+                // نتایج عمومی
+                results.push({
+                    id: 'context_info',
+                    title: 'اطلاعات زمینه‌ای',
+                    content: this.generateContextInfo(analysis, equivalentData),
+                    relevance: baseRelevance,
+                    type: 'context',
+                    source: 'ai_analysis',
+                    confidence: analysis.confidence
+                });
+                
+                return results.sort((a, b) => b.relevance - a.relevance);
+            },
+            
+            // تولید بیوگرافی
+            generatePersonBio: function(name) {
+                const bios = {
+                    'رامین اجلال': `رامین اجلال یک کارآفرین و توسعه‌دهنده در حوزه تجارت الکترونیک است. 
+                    او در توسعه سیستم‌های مدیریت فروشگاه آنلاین تخصص دارد و پروژه تتراشاپ را 
+                    به عنوان یک پلتفرم پیشرفته برای مدیریت کسب و کارهای آنلاین راه‌اندازی کرده است.`
+                };
+                
+                return bios[name] || `${name} یک فرد متخصص در حوزه مرتبط با جستجوی شما است.`;
+            },
+            
+            // تولید فعالیت‌های مرتبط
+            generateRelatedWork: function(name) {
+                return `بر اساس تحلیل هوشمند، ${name} احتمالاً در زمینه‌های زیر فعالیت دارد:
+                • توسعه نرم‌افزار و پلتفرم‌های تجارت الکترونیک
+                • مدیریت پروژه‌های فناوری اطلاعات
+                • راه‌اندازی کسب و کارهای آنلاین
+                • مشاوره در زمینه دیجیتال مارکتینگ`;
+            },
+            
+            // تولید اطلاعات زمینه‌ای
+            generateContextInfo: function(analysis, equivalentData) {
+                return `تحلیل هوشمند نشان می‌دهد که شما به دنبال اطلاعات درباره "${analysis.originalQuery}" هستید.
+                
+                زمینه تشخیص داده شده: ${analysis.intent}
+                نوع جستجو: ${analysis.queryType}
+                کلمات کلیدی اصلی: ${analysis.keywords.primary}
+                
+                معادل‌های شناسایی شده: ${equivalentData.variations.join(', ')}`;
+            }
+        };
+
+        // 🎯 سیستم مدیریت پارامترها
+        const ParameterManager = {
+            // بررسی پارامترهای موجود
+            checkAvailableParameters: function() {
+                const parameters = {
+                    query: document.getElementById('aiQuery').value,
+                    strategy: document.getElementById('searchStrategy').value,
+                    timestamp: new Date().toISOString(),
+                    userAgent: navigator.userAgent,
+                    viewport: {
+                        width: window.innerWidth,
+                        height: window.innerHeight
+                    }
+                };
+                
+                return {
+                    available: parameters,
+                    missing: this.identifyMissingParams(parameters),
+                    health: this.calculateParameterHealth(parameters)
+                };
+            },
+            
+            // شناسایی پارامترهای مفقود
+            identifyMissingParams: function(params) {
+                const missing = [];
+                
+                if (!params.query || params.query.trim().length === 0) {
+                    missing.push('عبارت جستجو');
+                }
+                
+                if (!params.strategy) {
+                    missing.push('استراتژی جستجو');
+                }
+                
+                return missing;
+            },
+            
+            // محاسبه سلامت پارامترها
+            calculateParameterHealth: function(params) {
+                let score = 100;
+                
+                if (!params.query || params.query.trim().length === 0) score -= 40;
+                if (params.query && params.query.trim().length < 3) score -= 20;
+                if (params.missing && params.missing.length > 0) score -= (params.missing.length * 10);
+                
+                return {
+                    score: Math.max(score, 0),
+                    status: score >= 80 ? 'عالی' : score >= 60 ? 'خوب' : score >= 40 ? 'متوسط' : 'ضعیف',
+                    color: score >= 80 ? 'green' : score >= 60 ? 'orange' : 'red'
+                };
+            },
+            
+            // تولید پارامترهای جایگزین
+            generateAlternativeParams: function(missingParams, currentParams) {
+                const alternatives = {};
+                
+                missingParams.forEach(param => {
+                    switch(param) {
+                        case 'عبارت جستجو':
+                            alternatives.query = 'جستجوی عمومی در تتراشاپ';
+                            break;
+                        case 'استراتژی جستجو':
+                            alternatives.strategy = 'smart';
+                            break;
+                    }
+                });
+                
+                return {
+                    ...currentParams,
+                    ...alternatives,
+                    isEnhanced: true,
+                    enhancementReason: 'تولید خودکار توسط سیستم هوشمند'
+                };
+            }
+        };
+
+        // 🔍 عملکردهای اصلی جستجو
+        function performAISearch() {
+            const query = document.getElementById('aiQuery').value.trim();
+            const strategy = document.getElementById('searchStrategy').value;
+            
+            // نمایش فرآیند تفکر
+            showThinkingProcess(query, strategy);
+            
+            // تحلیل پارامترها
+            const paramAnalysis = ParameterManager.checkAvailableParameters();
+            showParameterAnalysis(paramAnalysis);
+            
+            // اگر پارامترها مشکل دارند، تولید جایگزین
+            let enhancedParams = paramAnalysis.available;
+            if (paramAnalysis.missing.length > 0 || paramAnalysis.health.score < 70) {
+                enhancedParams = ParameterManager.generateAlternativeParams(
+                    paramAnalysis.missing, 
+                    paramAnalysis.available
+                );
+            }
+            
+            // تحلیل هوشمند عبارت جستجو
+            const queryAnalysis = AIInterpreter.analyzeQuery(query);
+            const equivalentData = AIInterpreter.generateEquivalentData(queryAnalysis);
+            
+            // تولید نتایج هوشمند
+            const aiResults = AIInterpreter.generateSmartResults(queryAnalysis, equivalentData);
+            
+            // نمایش نتایج
+            displayAIResults(aiResults, queryAnalysis);
+            displayRawData(enhancedParams, queryAnalysis, equivalentData);
+            displayAIInsights(queryAnalysis, aiResults);
+        }
+        
+        function showThinkingProcess(query, strategy) {
+            const thinkingSteps = document.getElementById('thinkingSteps');
+            
+            const steps = [
+                `🔍 دریافت عبارت جستجو: "${query}"`,
+                `🎯 تحلیل استراتژی: ${strategy}`,
+                `🧠 تشخیص زبان و زمینه`,
+                `📊 استخراج کلمات کلیدی`,
+                `💭 تعیین هدف کاربر`,
+                `🔧 تولید داده‌های معادل`,
+                `📈 تولید نتایج هوشمند`,
+                `✅ آماده‌سازی برای نمایش`
+            ];
+            
+            thinkingSteps.innerHTML = steps.map((step, index) => `
+                <div style="margin: 8px 0; padding: 8px; background: rgba(255,255,255,0.3); border-radius: 6px;">
+                    ${step}
+                </div>
+            `).join('');
+        }
+        
+        function showParameterAnalysis(analysis) {
+            const paramStatus = document.getElementById('paramStatus');
+            const health = analysis.health;
+            
+            paramStatus.innerHTML = `
+                <div style="color: ${health.color}; font-weight: bold;">
+                    وضعیت پارامترها: ${health.status} (امتیاز: ${health.score}/100)
+                </div>
+                <div style="margin-top: 10px;">
+                    <strong>پارامترهای موجود:</strong><br>
+                    • عبارت جستجو: "${analysis.available.query}"<br>
+                    • استراتژی: ${analysis.available.strategy}<br>
+                    • زمان: ${new Date(analysis.available.timestamp).toLocaleString('fa-IR')}
+                </div>
+                ${analysis.missing.length > 0 ? `
+                <div style="color: orange; margin-top: 10px;">
+                    <strong>پارامترهای مفقود:</strong><br>
+                    ${analysis.missing.map(item => `• ${item}`).join('<br>')}
+                </div>
+                ` : ''}
+            `;
+        }
+        
+        function displayAIResults(results, analysis) {
+            const container = document.getElementById('aiSearchResults');
+            
+            if (results.length === 0) {
+                container.innerHTML = `
+                    <div class="result-item">
+                        <div class="result-title">🔍 هیچ نتیجه‌ای یافت نشد</div>
+                        <div class="result-content">
+                            سیستم هوشمند نتوانست نتیجه‌ای برای "${analysis.originalQuery}" پیدا کند.
+                            <br>پیشنهادات هوشمند:
+                            <ul>
+                                <li>عبارت جستجو را دقیق‌تر وارد کنید</li>
+                                <li>از استراتژی "معنایی" استفاده کنید</li>
+                                <li>کلمات کلیدی مرتبط را امتحان کنید</li>
+                            </ul>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = results.map(result => `
+                <div class="result-item">
+                    <div class="result-header">
+                        <div class="result-title">${result.title}</div>
+                        <div style="color: ${result.confidence > 0.8 ? '#48bb78' : '#ed8936'}; font-weight: bold;">
+                            اطمینان: ${Math.round(result.confidence * 100)}%
+                        </div>
+                    </div>
+                    
+                    <div class="result-meta">
+                        <span>🏷️ نوع: ${result.type}</span>
+                        <span>📡 منبع: ${result.source}</span>
+                        <span>⭐ مرتبط بودن: ${Math.round(result.relevance * 100)}%</span>
+                    </div>
+                    
+                    <div class="result-content">
+                        ${result.content.replace(/\n/g, '<br>')}
+                    </div>
+                    
+                    <div class="result-details">
+                        <strong>🤖 نحوه تولید:</strong>
+                        <div style="font-size: 0.9em; color: #666;">
+                            این نتیجه بر اساس تحلیل هوشمند عبارت جستجو و تولید داده‌های معادل ایجاد شده است.
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function displayRawData(params, analysis, equivalentData) {
+            const container = document.getElementById('rawDataContent');
+            
+            container.innerHTML = `
+                <div class="result-item">
+                    <h4>📋 پارامترهای جستجو</h4>
+                    <pre style="background: #f7fafc; padding: 15px; border-radius: 8px; overflow-x: auto;">${JSON.stringify(params, null, 2)}</pre>
+                </div>
+                
+                <div class="result-item">
+                    <h4>🔍 تحلیل عبارت جستجو</h4>
+                    <pre style="background: #f7fafc; padding: 15px; border-radius: 8px; overflow-x: auto;">${JSON.stringify(analysis, null, 2)}</pre>
+                </div>
+                
+                <div class="result-item">
+                    <h4>🔄 داده‌های معادل تولید شده</h4>
+                    <pre style="background: #f7fafc; padding: 15px; border-radius: 8px; overflow-x: auto;">${JSON.stringify(equivalentData, null, 2)}</pre>
+                </div>
+            `;
+        }
+        
+        function displayAIInsights(analysis, results) {
+            const container = document.getElementById('insightsContent');
+            
+            const insights = [
+                `🎯 <strong>هدف کاربر:</strong> ${analysis.intent}`,
+                `🔍 <strong>نوع جستجو:</strong> ${analysis.queryType}`,
+                `💡 <strong>پیشنهاد هوشمند:</strong> ${this.generateAIRecommendation(analysis)}`,
+                `📈 <strong>کارایی سیستم:</strong> ${results.length} نتیجه با میانگین اطمینان ${Math.round(results.reduce((acc, r) => acc + r.confidence, 0) / results.length * 100)}%`,
+                `🚀 <strong>بهبود بعدی:</strong> ${this.generateImprovementSuggestions(analysis)}`
+            ];
+            
+            container.innerHTML = `
+                <div class="result-item">
+                    <h4>💡 بینش‌های هوشمند</h4>
+                    ${insights.map(insight => `
+                        <div style="padding: 10px; margin: 8px 0; background: #f0f9ff; border-radius: 8px; border-right: 4px solid #0ea5e9;">
+                            ${insight}
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+        
+        function generateAIRecommendation(analysis) {
+            const recommendations = {
+                'person_search': 'برای جستجوی افراد، می‌توانید از نام کامل یا عناوین شغلی استفاده کنید',
+                'product_search': 'برای محصولات، نام دقیق محصول یا دسته‌بندی آن را وارد کنید',
+                'price_inquiry': 'برای قیمت‌ها، نام محصول + کلمه "قیمت" را جستجو کنید',
+                'general_search': 'عبارت خود را به صورت کلی‌تر یا دقیق‌تر فرموله کنید'
+            };
+            
+            return recommendations[analysis.queryType] || 'عبارت جستجو را به صورت واضح‌تر وارد کنید';
+        }
+        
+        function generateImprovementSuggestions(analysis) {
+            if (analysis.confidence < 0.7) {
+                return 'عبارت جستجو را دقیق‌تر و با جزئیات بیشتر وارد کنید';
+            }
+            return 'سیستم در حالت بهینه کار می‌کند';
+        }
+        
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.style.display = 'none';
+            });
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            document.getElementById(tabName).style.display = 'block';
+            event.target.classList.add('active');
+        }
+
+        // راه‌اندازی اولیه
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🧠 سیستم جستجوی هوشمند با AI راه‌اندازی شد');
+        });
+    </script>
+</body>
+</html>

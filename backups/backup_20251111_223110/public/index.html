@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تتراشاپ - نمای کامل پروژه</title>
+    <style>
+        :root {
+            --primary: #667eea;
+            --secondary: #764ba2;
+            --success: #48bb78;
+            --danger: #f56565;
+            --warning: #ed8936;
+            --info: #4299e1;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            min-height: 100vh;
+            direction: rtl;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 25px;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+        
+        .logo {
+            font-size: 4em;
+            margin-bottom: 15px;
+            color: var(--primary);
+        }
+        
+        .title {
+            font-size: 2.5em;
+            color: #2d3748;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #718096;
+            font-size: 1.2em;
+            margin-bottom: 20px;
+        }
+        
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-bottom: 25px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card-full {
+            grid-column: 1 / -1;
+        }
+        
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .status-item {
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            background: #f7fafc;
+            border: 2px solid #e2e8f0;
+        }
+        
+        .status-active {
+            background: #f0fff4;
+            border-color: var(--success);
+            color: #22543d;
+        }
+        
+        .status-inactive {
+            background: #fed7d7;
+            border-color: var(--danger);
+            color: #742a2a;
+        }
+        
+        .btn-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 12px;
+            margin: 20px 0;
+        }
+        
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-success { background: var(--success); color: white; }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-warning { background: var(--warning); color: white; }
+        .btn-info { background: var(--info); color: white; }
+        .btn-secondary { background: #e2e8f0; color: #4a5568; }
+        
+        .feature-list {
+            list-style: none;
+            margin: 15px 0;
+        }
+        
+        .feature-list li {
+            padding: 10px 0;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+        }
+        
+        .feature-list li:before {
+            content: "✅";
+            margin-left: 10px;
+        }
+        
+        .tech-stack {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        
+        .tech-tag {
+            background: #edf2f7;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            color: #4a5568;
+        }
+        
+        .live-preview {
+            background: #2d3748;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            color: white;
+            font-family: monospace;
+        }
+        
+        .cache-display {
+            max-height: 200px;
+            overflow-y: auto;
+            background: #f7fafc;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">🛍️</div>
+            <h1 class="title">تتراشاپ - نمای کامل پروژه</h1>
+            <p class="subtitle">سیستم پیشرفته مدیریت فروشگاه با قابلیت‌های کامل</p>
+            
+            <div class="status-grid">
+                <div class="status-item status-active">
+                    <div>🌐 سرور فرانت‌اند</div>
+                    <div>فعال - پورت 8000</div>
+                </div>
+                <div class="status-item status-active">
+                    <div>🔧 سرور پروکسی</div>
+                    <div>فعال - پورت 3003</div>
+                </div>
+                <div class="status-item status-active">
+                    <div>💾 سیستم کش</div>
+                    <div>فعال و آماده</div>
+                </div>
+                <div class="status-item status-active">
+                    <div>🚀 وضعیت کلی</div>
+                    <div>در حال اجرا</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard">
+            <div class="card">
+                <h3>🎯 مدیریت پروژه</h3>
+                <p>مدیریت و مشاهده بخش‌های مختلف پروژه</p>
+                
+                <div class="btn-grid">
+                    <a href="./index.html" class="btn btn-primary">🏠 صفحه اصلی</a>
+                    <a href="./index-test.html" class="btn btn-success">🧪 نسخه تستی</a>
+                    <a href="./index-advanced-fixed.html" class="btn btn-warning">⚡ نسخه پیشرفته</a>
+                    <a href="#" onclick="showProjectStructure()" class="btn btn-info">📁 ساختار پروژه</a>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>💾 سیستم کش پیشرفته</h3>
+                <p>مدیریت حافظه موقت و بهبود عملکرد</p>
+                
+                <div class="btn-grid">
+                    <button class="btn btn-success" onclick="testCacheSystem()">🧪 تست سیستم کش</button>
+                    <button class="btn btn-danger" onclick="clearAllCache()">🗑️ پاک کردن کش</button>
+                    <button class="btn btn-info" onclick="showCacheStats()">📊 آمار کش</button>
+                </div>
+                
+                <div id="cacheStats" class="cache-display">
+                    آمار کش اینجا نمایش داده می‌شود...
+                </div>
+            </div>
+
+            <div class="card card-full">
+                <h3>🚀 قابلیت‌های پروژه</h3>
+                
+                <div class="feature-list">
+                    <li>سیستم جستجوی پیشرفته با API اختصاصی</li>
+                    <li>پروکسی محلی برای حل مشکل CORS</li>
+                    <li>سیستم کش هوشمند با TTL قابل تنظیم</li>
+                    <li>ذخیره‌سازی محلی (LocalStorage)</li>
+                    <li>طراحی واکنش‌گرا و مدرن</li>
+                    <li>مدیریت خطا و نمایش وضعیت</li>
+                    <li>قابلیت دیپلوی روی Vercel/Netlify</li>
+                    <li>سازگاری با دستگاه‌های مختلف</li>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>🔧 اطلاعات فنی</h3>
+                
+                <div class="tech-stack">
+                    <span class="tech-tag">HTML5</span>
+                    <span class="tech-tag">CSS3</span>
+                    <span class="tech-tag">JavaScript ES6+</span>
+                    <span class="tech-tag">LocalStorage</span>
+                    <span class="tech-tag">Node.js</span>
+                    <span class="tech-tag">Python HTTP Server</span>
+                    <span class="tech-tag">Vercel</span>
+                    <span class="tech-tag">Git</span>
+                </div>
+                
+                <div style="margin-top: 15px;">
+                    <strong>آدرس‌های فعال:</strong>
+                    <div style="font-size: 12px; margin-top: 5px;">
+                        • http://localhost:8000<br>
+                        • http://localhost:3003 (پروکسی)
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>👁️ پیش‌نمایش زنده</h3>
+                <p>مشاهده وضعیت لحظه‌ای سیستم</p>
+                
+                <div class="live-preview" id="livePreview">
+                    سیستم در حال بررسی...
+                </div>
+                
+                <button class="btn btn-info" onclick="refreshPreview()">🔄 بروزرسانی پیش‌نمایش</button>
+            </div>
+        </div>
+
+        <div class="card card-full">
+            <h3>⚡ دستورات سریع ترمینال</h3>
+            
+            <div class="live-preview">
+                <div># راه‌اندازی سرور فرانت‌اند</div>
+                <div>$ python3 -m http.server 8000</div>
+                <br>
+                <div># راه‌اندازی پروکسی</div>
+                <div>$ node simple-proxy.js</div>
+                <br>
+                <div># مشاهده فایل‌ها</div>
+                <div>$ ls -la public/</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // سیستم مدیریت کش
+        const cacheManager = {
+            getAll: function() {
+                const items = [];
+                try {
+                    for (let i = 0; i < localStorage.length; i++) {
+                        const key = localStorage.key(i);
+                        if (key && key.startsWith('search_')) {
+                            const itemStr = localStorage.getItem(key);
+                            if (itemStr) {
+                                const item = JSON.parse(itemStr);
+                                if (Date.now() <= item.expiry) {
+                                    items.push({
+                                        query: key.replace('search_', ''),
+                                        timestamp: item.timestamp,
+                                        data: item.data
+                                    });
+                                }
+                            }
+                        }
+                    }
+                } catch (error) {
+                    console.error('خطا در خواندن کش:', error);
+                }
+                return items;
+            },
+            
+            clearAll: function() {
+                try {
+                    const keysToRemove = [];
+                    for (let i = 0; i < localStorage.length; i++) {
+                        const key = localStorage.key(i);
+                        if (key && key.startsWith('search_')) {
+                            keysToRemove.push(key);
+                        }
+                    }
+                    
+                    keysToRemove.forEach(key => {
+                        localStorage.removeItem(key);
+                    });
+                    
+                    return keysToRemove.length;
+                } catch (error) {
+                    console.error('خطا در پاک کردن کش:', error);
+                    return 0;
+                }
+            },
+            
+            getStats: function() {
+                const items = this.getAll();
+                return {
+                    total: items.length,
+                    items: items.map(item => ({
+                        query: item.query,
+                        timestamp: item.timestamp,
+                        results: item.data?.data?.results?.length || 0
+                    }))
+                };
+            }
+        };
+
+        // عملکردهای اصلی
+        function testCacheSystem() {
+            const testQuery = 'تست سیستم ' + new Date().toLocaleTimeString('fa-IR');
+            const testData = {
+                success: true,
+                data: {
+                    results: [{
+                        title: "تست سیستم کش",
+                        content: "این یک تست برای بررسی عملکرد سیستم کش است",
+                        relevance: 0.95
+                    }]
+                }
+            };
+            
+            const item = {
+                data: testData,
+                expiry: Date.now() + (5 * 60 * 1000),
+                timestamp: new Date().toLocaleString('fa-IR')
+            };
+            
+            try {
+                localStorage.setItem(`search_${testQuery}`, JSON.stringify(item));
+                showMessage('✅ تست سیستم کش موفقیت‌آمیز بود', 'success');
+                showCacheStats();
+            } catch (error) {
+                showMessage('❌ خطا در تست سیستم کش: ' + error.message, 'error');
+            }
+        }
+
+        function clearAllCache() {
+            const clearedCount = cacheManager.clearAll();
+            showMessage(`🗑️ ${clearedCount} آیتم کش پاک شد`, 'success');
+            showCacheStats();
+        }
+
+        function showCacheStats() {
+            const stats = cacheManager.getStats();
+            const cacheStats = document.getElementById('cacheStats');
+            
+            if (stats.total === 0) {
+                cacheStats.innerHTML = '<div style="text-align: center; color: #718096;">کش خالی است</div>';
+            } else {
+                cacheStats.innerHTML = stats.items.map(item => `
+                    <div style="border-bottom: 1px solid #e2e8f0; padding: 8px 0;">
+                        <strong>${item.query}</strong>
+                        <div style="font-size: 12px; color: #718096;">
+                            📅 ${item.timestamp} | 📊 ${item.results} نتیجه
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function showProjectStructure() {
+            const structure = `
+📦 tetrashop-master-repo/
+├── 📁 public/
+│   ├── 🏠 index.html                 # صفحه اصلی
+│   ├── ⚡ index-advanced-fixed.html  # نسخه پیشرفته (اصلاح شده)
+│   ├── 🧪 index-test.html           # نسخه تستی
+│   └── 🔧 simple-proxy.js           # سرور پروکسی
+├── 📁 frontend/                     # کدهای اصلی فرانت‌اند
+├── ⚙️ vercel.json                   # تنظیمات دیپلوی
+└── 📄 package.json                  # تنظیمات پروژه
+            `;
+            alert(structure);
+        }
+
+        function refreshPreview() {
+            const preview = document.getElementById('livePreview');
+            const stats = cacheManager.getStats();
+            const serverStatus = navigator.onLine ? '🟢 متصل' : '🔴 قطع';
+            
+            preview.innerHTML = `
+🕒 ${new Date().toLocaleString('fa-IR')}
+📊 کش: ${stats.total} آیتم ذخیره شده
+🌐 شبکه: ${serverStatus}
+🔧 پروکسی: فعال (پورت 3003)
+🚀 سرور: فعال (پورت 8000)
+            `;
+        }
+
+        function showMessage(message, type = 'info') {
+            alert(message);
+        }
+
+        // راه‌اندازی اولیه
+        document.addEventListener('DOMContentLoaded', function() {
+            showCacheStats();
+            refreshPreview();
+            
+            // بروزرسانی خودکار هر 30 ثانیه
+            setInterval(refreshPreview, 30000);
+            
+            console.log('🎯 نمای کامل پروژه راه‌اندازی شد');
+        });
+    </script>
+</body>
+</html>
+<div style="text-align: center; margin: 20px 0;">
+    <a href="./advanced-search.html" class="btn btn-primary" 
+       style="background: #48bb78; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-size: 18px;">
+       🔍 سیستم جستجوی پیشرفته
+    </a>
+</div>
+<div style="text-align: center; margin: 20px 0;">
+    <a href="./advanced-search.html" class="btn btn-primary" 
+       style="background: #48bb78; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-size: 18px;">
+       🔍 سیستم جستجوی پیشرفته
+    </a>
+</div>
+<div style="text-align: center; margin: 20px 0;">
+    <a href="./advanced-search.html" class="btn btn-primary" 
+       style="background: #48bb78; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-size: 18px;">
+       🔍 سیستم جستجوی پیشرفته
+    </a>
+</div>

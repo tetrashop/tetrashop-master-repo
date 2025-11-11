@@ -1,0 +1,25 @@
+{
+    "monitoring": {
+        "interval_seconds": 30,
+        "max_log_size_mb": 10,
+        "backup_retention_days": 7,
+        "auto_fix_enabled": true,
+        "health_check_timeout": 10
+    },
+    "repositories": {
+        "main": "~/tetrashop-master-repo",
+        "frontend": "~/tetrashop-master-repo/frontend",
+        "public": "~/tetrashop-master-repo/public"
+    },
+    "algorithms": {
+        "cache_repair": true,
+        "git_recovery": true,
+        "service_monitor": true,
+        "performance_optimizer": true
+    },
+    "notifications": {
+        "enable_sound": true,
+        "enable_desktop": false,
+        "critical_errors_only": true
+    }
+}

@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تتراشاپ - نسخه پیشرفته با کش محلی</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            direction: rtl;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .cache-stats {
+            background: #e6fffa;
+            border: 2px solid #38b2ac;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px 0;
+            font-size: 14px;
+        }
+        
+        .cache-hit {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+        
+        .cache-miss {
+            background: #fed7d7;
+            color: #742a2a;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🛍️ تتراشاپ - نسخه پیشرفته</h1>
+            <div class="cache-stats" id="cacheStats">
+                📊 وضعیت کش: در حال بارگذاری...
+            </div>
+        </div>
+        
+        <div id="app">
+            <!-- محتوای داینامیک -->
+        </div>
+    </div>
+
+    <script>
+        // سیستم کش پیشرفته
+        const searchCache = {
+            set: (query, results, ttl = 5 * 60 * 1000) => { // 5 دقیقه TTL
+                const item = {
+                    data: results,
+                    expiry: Date.now() + ttl,
+                    timestamp: new Date().toLocaleString('fa-IR')
+                };
+                localStorage.setItem(`search_${query}`, JSON.stringify(item));
+                this.updateStats();
+            },
+            
+            get: (query) => {
+                const itemStr = localStorage.getItem(`search_${query}`);
+                if (!itemStr) return null;
+                
+                const item = JSON.parse(itemStr);
+                if (Date.now() > item.expiry) {
+                    localStorage.removeItem(`search_${query}`);
+                    return null;
+                }
+                
+                return item;
+            },
+            
+            clear: () => {
+                Object.keys(localStorage).forEach(key => {
+                    if (key.startsWith('search_')) {
+                        localStorage.removeItem(key);
+                    }
+                });
+                this.updateStats();
+            },
+            
+            getAll: () => {
+                const items = [];
+                Object.keys(localStorage).forEach(key => {
+                    if (key.startsWith('search_')) {
+                        const item = JSON.parse(localStorage.getItem(key));
+                        if (Date.now() <= item.expiry) {
+                            items.push({
+                                query: key.replace('search_', ''),
+                                ...item
+                            });
+                        }
+                    }
+                });
+                return items;
+            },
+            
+            updateStats: () => {
+                const items = this.getAll();
+                const statsElement = document.getElementById('cacheStats');
+                statsElement.innerHTML = `
+                    📊 وضعیت کش: ${items.length} جستجوی ذخیره شده
+                    <br>
+                    <small>${items.map(item => `${item.query} (${item.timestamp})`).join(', ')}</small>
+                `;
+            }
+        };
+
+        // رابط کاربری
+        function renderUI() {
+            const app = document.getElementById('app');
+            const cachedItems = searchCache.getAll();
+            
+            app.innerHTML = `
+                <div style="background: white; border-radius: 15px; padding: 25px; margin-bottom: 20px;">
+                    <h3>🔍 جستجوی پیشرفته</h3>
+                    <input type="text" id="searchInput" placeholder="عبارت جستجو..." 
+                           style="width: 100%; padding: 12px; margin: 10px 0; border: 2px solid #e2e8f0; border-radius: 8px;"
+                           value="رامین اجلال">
+                    <button onclick="performSearch()" 
+                            style="background: #667eea; color: white; border: none; padding: 12px 30px; border-radius: 8px; width: 100%; cursor: pointer;">
+                        🔍 اجرای جستجو
+                    </button>
+                    
+                    <div style="margin-top: 15px;">
+                        <button onclick="clearCache()" style="background: #f56565; color: white; border: none; padding: 8px 16px; border-radius: 6px; margin-left: 10px; cursor: pointer;">
+                            🗑️ پاک کردن کش
+                        </button>
+                        <button onclick="viewCache()" style="background: #48bb78; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer;">
+                            👁️ مشاهده کش
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="results" style="background: white; border-radius: 15px; padding: 25px;">
+                    <div style="text-align: center; color: #667eea;">
+                        🔍 نتایج اینجا نمایش داده می‌شود...
+                    </div>
+                </div>
+                
+                <div id="cacheView" style="display: none; background: #f7fafc; border-radius: 15px; padding: 20px; margin-top: 15px;">
+                    <h4>👁️ محتوای کش</h4>
+                    <div id="cacheContent"></div>
+                </div>
+            `;
+            
+            searchCache.updateStats();
+        }
+
+        // عملکردهای اصلی
+        async function performSearch() {
+            const query = document.getElementById('searchInput').value.trim();
+            if (!query) return;
+            
+            const resultsElement = document.getElementById('results');
+            
+            // چک کردن کش
+            const cached = searchCache.get(query);
+            if (cached) {
+                resultsElement.innerHTML = `
+                    <div class="cache-hit" style="padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                        ✅ <strong>نتیجه از کش بازیابی شد</strong> (ذخیره شده در: ${cached.timestamp})
+                    </div>
+                    ${renderResults(cached.data, query)}
+                `;
+                return;
+            }
+            
+            resultsElement.innerHTML = '<div style="text-align: center; padding: 20px;">⏳ در حال جستجو...</div>';
+            
+            try {
+                const response = await fetch('http://localhost:3003');
+                const data = await response.json();
+                
+                // ذخیره در کش
+                searchCache.set(query, data);
+                
+                resultsElement.innerHTML = `
+                    <div class="cache-miss" style="padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                        🔄 <strong>نتیجه از سرور دریافت و در کش ذخیره شد</strong>
+                    </div>
+                    ${renderResults(data, query)}
+                `;
+                
+            } catch (error) {
+                resultsElement.innerHTML = `
+                    <div style="background: #fed7d7; color: #c53030; padding: 15px; border-radius: 8px;">
+                        ❌ خطا در جستجو: ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        function renderResults(data, query) {
+            if (data.success && data.data && data.data.results) {
+                return `
+                    <h4>📊 نتایج برای "${query}"</h4>
+                    ${data.data.results.map((result, index) => `
+                        <div style="border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px; margin: 10px 0; background: #f7fafc;">
+                            <div style="font-weight: bold; margin-bottom: 8px;">${result.title}</div>
+                            <div>${result.content}</div>
+                            <div style="margin-top: 8px; color: #667eea;">
+                                🔗 ارتباط: ${Math.round((result.relevance || 0.8) * 100)}%
+                            </div>
+                        </div>
+                    `).join('')}
+                `;
+            }
+            return `<div>نتیجه‌ای یافت نشد</div>`;
+        }
+
+        function clearCache() {
+            searchCache.clear();
+            alert('کش پاک شد!');
+        }
+
+        function viewCache() {
+            const cacheView = document.getElementById('cacheView');
+            const cacheContent = document.getElementById('cacheContent');
+            const cachedItems = searchCache.getAll();
+            
+            if (cachedItems.length === 0) {
+                cacheContent.innerHTML = '<div>کش خالی است</div>';
+            } else {
+                cacheContent.innerHTML = cachedItems.map(item => `
+                    <div style="border: 1px solid #e2e8f0; border-radius: 6px; padding: 10px; margin: 5px 0;">
+                        <strong>${item.query}</strong>
+                        <div style="font-size: 12px; color: #718096;">
+                            ذخیره شده: ${item.timestamp}
+                        </div>
+                    </div>
+                `).join('');
+            }
+            
+            cacheView.style.display = 'block';
+        }
+
+        // راه‌اندازی اولیه
+        document.addEventListener('DOMContentLoaded', () => {
+            renderUI();
+        });
+    </script>
+</body>
+</html>
