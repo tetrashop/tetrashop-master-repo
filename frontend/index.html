@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تتراشاپ - نسخه تستی</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            direction: rtl;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .logo {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            color: #667eea;
+        }
+        
+        .title {
+            font-size: 2em;
+            color: #2d3748;
+            margin-bottom: 10px;
+        }
+        
+        .status {
+            background: #e6fffa;
+            border: 2px solid #38b2ac;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+            text-align: center;
+        }
+        
+        .status.error {
+            background: #fed7d7;
+            border-color: #f56565;
+        }
+        
+        .status.success {
+            background: #f0fff4;
+            border-color: #48bb78;
+        }
+        
+        .search-box {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+        
+        .search-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+            transition: background 0.3s;
+        }
+        
+        .search-btn:hover {
+            background: #5a67d8;
+        }
+        
+        .search-btn:disabled {
+            background: #a0aec0;
+            cursor: not-allowed;
+        }
+        
+        .results {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .result-item {
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            background: #f7fafc;
+        }
+        
+        .result-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #2d3748;
+        }
+        
+        .result-content {
+            color: #4a5568;
+            line-height: 1.6;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #667eea;
+        }
+        
+        .error-message {
+            background: #fed7d7;
+            color: #c53030;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        
+        .success-message {
+            background: #f0fff4;
+            color: #276749;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            border-right: 4px solid #48bb78;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">🛍️</div>
+            <h1 class="title">تتراشاپ - نسخه تستی</h1>
+            <div id="statusMessage" class="status">
+                🔄 در حال بررسی اتصال...
+            </div>
+        </div>
+        
+        <div class="search-box">
+            <input type="text" id="searchInput" class="search-input" 
+                   placeholder="عبارت مورد نظر برای جستجو را وارد کنید..." 
+                   value="رامین اجلال">
+            <button id="searchBtn" class="search-btn">
+                🔍 اجرای جستجو (نسخه تستی)
+            </button>
+            
+            <div style="margin-top: 15px; text-align: center;">
+                <div class="success-message">
+                    <strong>💡 نسخه تستی فعال</strong><br>
+                    این نسخه با داده‌های تستی کار می‌کند تا از عملکرد صحیح سیستم اطمینان حاصل شود.
+                </div>
+            </div>
+        </div>
+        
+        <div class="results">
+            <div id="resultsContainer">
+                <div class="loading">
+                    🔍 نتایج جستجو اینجا نمایش داده می‌شود...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const PROXY_URL = 'http://localhost:3003';
+        
+        // عناصر DOM
+        const searchInput = document.getElementById('searchInput');
+        const searchBtn = document.getElementById('searchBtn');
+        const resultsContainer = document.getElementById('resultsContainer');
+        const statusMessage = document.getElementById('statusMessage');
+        
+        // تست اتصال اولیه
+        async function testConnection() {
+            try {
+                statusMessage.innerHTML = '🔌 در حال تست اتصال به پروکسی...';
+                
+                const response = await fetch(PROXY_URL, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+                
+                if (response.ok) {
+                    statusMessage.innerHTML = '✅ <strong>اتصال برقرار شد!</strong> سیستم آماده جستجو است.';
+                    statusMessage.className = 'status success';
+                    return true;
+                } else {
+                    throw new Error(`خطای HTTP: ${response.status}`);
+                }
+            } catch (error) {
+                statusMessage.innerHTML = `
+                    ❌ <strong>پروکسی در دسترس نیست</strong><br>
+                    لطفاً مطمئن شوید سرور پروکسی در حال اجرا است:<br>
+                    <code>node simple-proxy.js</code>
+                    <br><br>
+                    خطا: ${error.message}
+                `;
+                statusMessage.className = 'status error';
+                return false;
+            }
+        }
+        
+        // اجرای جستجو
+        async function performSearch() {
+            const query = searchInput.value.trim();
+            
+            if (!query) {
+                alert('لطفاً عبارت جستجو را وارد کنید');
+                return;
+            }
+            
+            // غیرفعال کردن دکمه جستجو
+            searchBtn.disabled = true;
+            searchBtn.textContent = '⏳ در حال جستجو...';
+            
+            // پاک کردن نتایج قبلی
+            resultsContainer.innerHTML = '<div class="loading">🔍 در حال جستجو...</div>';
+            
+            try {
+                // ارسال درخواست به پروکسی تستی
+                const response = await fetch(PROXY_URL);
+                
+                if (!response.ok) {
+                    throw new Error(`خطای HTTP: ${response.status} - ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                
+                // نمایش نتایج
+                displayResults(data, query);
+                
+            } catch (error) {
+                console.error('خطای جستجو:', error);
+                resultsContainer.innerHTML = `
+                    <div class="error-message">
+                        <strong>❌ خطا در انجام جستجو</strong><br>
+                        ${error.message}<br><br>
+                        💡 راهنمایی:<br>
+                        ۱. مطمئن شوید سرور پروکسی در حال اجرا است<br>
+                        ۲. دوباره تلاش کنید
+                    </div>
+                `;
+            } finally {
+                // فعال کردن دکمه جستجو
+                searchBtn.disabled = false;
+                searchBtn.textContent = '🔍 اجرای جستجو (نسخه تستی)';
+            }
+        }
+        
+        // نمایش نتایج
+        function displayResults(data, query) {
+            if (data.success && data.data && data.data.results && data.data.results.length > 0) {
+                let html = `
+                    <div class="success-message">
+                        ✅ <strong>جستجو موفقیت‌آمیز بود!</strong><br>
+                        سیستم به درستی کار می‌کند. ${data.data.results.length} نتیجه برای "${query}" یافت شد.
+                    </div>
+                    <h3 style="margin: 20px 0 15px 0; color: #2d3748;">📊 نتایج جستجو برای "${query}"</h3>
+                `;
+                
+                data.data.results.forEach((result, index) => {
+                    html += `
+                        <div class="result-item">
+                            <div class="result-title">${result.title || 'بدون عنوان'}</div>
+                            <div class="result-content">
+                                ${result.content || 'توضیحاتی موجود نیست'}<br>
+                                <strong>میزان ارتباط:</strong> ${Math.round((result.relevance || 0.8) * 100)}%
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                resultsContainer.innerHTML = html;
+            } else {
+                resultsContainer.innerHTML = `
+                    <div class="result-item">
+                        <div class="result-title">🔍 هیچ نتیجه‌ای یافت نشد</div>
+                        <div class="result-content">
+                            جستجو برای "<strong>${query}</strong>" هیچ نتیجه‌ای نداشت.<br>
+                            لطفاً عبارت جستجو را تغییر دهید.
+                        </div>
+                    </div>
+                `;
+            }
+        }
+        
+        // رویدادها
+        searchBtn.addEventListener('click', performSearch);
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                performSearch();
+            }
+        });
+        
+        // مقداردهی اولیه
+        document.addEventListener('DOMContentLoaded', () => {
+            testConnection();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,24 @@
+{
+  "name": "tetrashop-frontend",
+  "version": "1.0.0",
+  "type": "commonjs",
+  "description": "Tetrashop Frontend Application",
+  "main": "index.html",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "serve": "python3 -m http.server 8000",
+    "proxy": "node local-proxy.js"
+  },
+  "dependencies": {
+    "jquery": "^3.6.0",
+    "select2": "^4.1.0-rc.0"
+  },
+  "devDependencies": {
+    "vite": "^4.4.5"
+  },
+  "keywords": ["tetrashop", "frontend", "dashboard"],
+  "author": "Tetrashop Team",
+  "license": "MIT"
+}
