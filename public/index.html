@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تتراشاپ - نسخه تولید</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            direction: rtl;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            max-width: 500px;
+            width: 100%;
+        }
+        
+        .logo {
+            font-size: 4em;
+            margin-bottom: 20px;
+            color: #667eea;
+        }
+        
+        .title {
+            font-size: 2em;
+            color: #2d3748;
+            margin-bottom: 15px;
+        }
+        
+        .status {
+            background: #f0fff4;
+            border: 2px solid #48bb78;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+            color: #22543d;
+        }
+        
+        .features {
+            text-align: right;
+            margin: 25px 0;
+        }
+        
+        .feature-item {
+            padding: 10px 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 25px;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #4a5568;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">🛍️</div>
+        <h1 class="title">تتراشاپ</h1>
+        <div class="status">
+            ✅ نسخه تولید - آماده به کار
+        </div>
+        
+        <div class="features">
+            <div class="feature-item">🚀 سیستم جستجوی پیشرفته</div>
+            <div class="feature-item">💾 ذخیره‌سازی محلی هوشمند</div>
+            <div class="feature-item">📱 طراحی واکنش‌گرا</div>
+            <div class="feature-item">🔧 قابلیت توسعه آسان</div>
+        </div>
+        
+        <div class="buttons">
+            <button class="btn btn-primary" onclick="openTestVersion()">
+                نسخه تستی
+            </button>
+            <button class="btn btn-secondary" onclick="openAdvancedVersion()">
+                نسخه پیشرفته
+            </button>
+        </div>
+        
+        <div style="margin-top: 20px; font-size: 14px; color: #718096;">
+            آدرس فعلی: <span id="currentUrl"></span>
+        </div>
+    </div>
+
+    <script>
+        // نمایش آدرس فعلی
+        document.getElementById('currentUrl').textContent = window.location.hostname;
+        
+        function openTestVersion() {
+            window.open('./index-test.html', '_self');
+        }
+        
+        function openAdvancedVersion() {
+            window.open('./index-advanced.html', '_self');
+        }
+        
+        // بررسی وجود فایل‌های نسخه‌ها
+        fetch('./index-test.html')
+            .then(response => {
+                if (!response.ok) {
+                    console.warn('نسخه تستی یافت نشد');
+                }
+            })
+            .catch(error => {
+                console.warn('خطا در بررسی نسخه تستی:', error);
+            });
+    </script>
+</body>
+</html>
