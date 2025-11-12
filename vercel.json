@@ -1,21 +1,43 @@
 {
   "version": 2,
-  "name": "tetrashop-frontend",
   "builds": [
     {
-      "src": "public/**/*",
+      "src": "public/**/*.html",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "public/**/*.js",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "public/**/*.css",
       "use": "@vercel/static"
     }
   ],
   "routes": [
     {
+      "src": "/static/(.*)",
+      "dest": "/static/$1"
+    },
+    {
+      "src": "/(.*\\.css)",
+      "dest": "/public/$1"
+    },
+    {
+      "src": "/(.*\\.js)",
+      "dest": "/public/$1"
+    },
+    {
+      "src": "/advanced-search",
+      "dest": "/public/advanced-search-fixed.html"
+    },
+    {
+      "src": "/ai-search",
+      "dest": "/public/ai-search-results.html"
+    },
+    {
       "src": "/(.*)",
       "dest": "/public/$1"
     }
-  ],
-  "outputDirectory": "public",
-  "github": {
-    "enabled": true,
-    "autoJobCancelation": true
-  }
+  ]
 }

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>جستجوی هوشمند تتراشاپ</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; }
+        .container { max-width: 1200px; margin: 0 auto; background: white; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); overflow: hidden; }
+        .header { background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%); color: white; padding: 30px; text-align: center; }
+        .header h1 { font-size: 2.5rem; margin-bottom: 10px; }
+        .search-section { padding: 30px; background: #f8f9fa; border-bottom: 1px solid #e9ecef; }
+        .search-box { display: flex; gap: 15px; max-width: 800px; margin: 0 auto; }
+        .search-input { flex: 1; padding: 15px 20px; border: 2px solid #e9ecef; border-radius: 50px; font-size: 1.1rem; outline: none; }
+        .search-btn { background: linear-gradient(135deg, #3498db 0%, #2980b9 100%); color: white; border: none; padding: 15px 30px; border-radius: 50px; font-size: 1.1rem; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔍 جستجوی هوشمند تتراشاپ</h1>
+            <p>سیستم درک مفهوم و استخراج پاسخ از پایگاه دانش</p>
+        </div>
+        
+        <div class="search-section">
+            <div class="search-box">
+                <input type="text" class="search-input" id="searchInput" placeholder="سوال یا موضوع مورد نظر خود را وارد کنید...">
+                <button class="search-btn" id="searchBtn">جستجوی هوشمند</button>
+            </div>
+        </div>
+        
+        <div class="results-section" id="resultsSection">
+            <div style="text-align: center; padding: 40px; color: #2c3e50;">
+                <h2>سیستم جستجوی هوشمند فعال شد! 🎉</h2>
+                <p>همین حالا یک سوال بپرسید تا نتایج هوشمند را ببینید.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // سیستم ساده برای تست
+        document.getElementById('searchBtn').addEventListener('click', function() {
+            const query = document.getElementById('searchInput').value;
+            if (query) {
+                alert(`جستجو برای: "${query}"\n\nاین یک نمایش اولیه است. سیستم کامل به زودی بارگذاری می‌شود.`);
+            }
+        });
+    </script>
+</body>
+</html>
